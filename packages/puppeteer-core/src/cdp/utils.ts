@@ -7,9 +7,9 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {JSHandle} from '../api/JSHandle.js';
+import type {ConsoleMessageType} from '../common/ConsoleMessage.js';
 import {PuppeteerURL, evaluationString} from '../common/util.js';
 import {assert} from '../util/assert.js';
-import {ConsoleMessageType} from '../common/ConsoleMessage.js';
 
 /**
  * @internal

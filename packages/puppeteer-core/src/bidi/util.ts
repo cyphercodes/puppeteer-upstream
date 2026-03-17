@@ -6,13 +6,12 @@
 
 import type * as Bidi from 'webdriver-bidi-protocol';
 
-import {ProtocolError, TimeoutError} from '../common/Errors.js';
-import {PuppeteerURL} from '../common/util.js';
-
 import type {
   ConsoleMessageLocation,
   ConsoleMessageType,
 } from '../common/ConsoleMessage.js';
+import {ProtocolError, TimeoutError} from '../common/Errors.js';
+import {PuppeteerURL} from '../common/util.js';
 
 import {BidiDeserializer} from './Deserializer.js';
 

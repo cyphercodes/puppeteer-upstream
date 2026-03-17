@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {ConsoleMessage} from '../common/ConsoleMessage.js';
+import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import {UnsupportedOperation} from '../common/Errors.js';
+import type {EventType} from '../common/EventEmitter.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {EvaluateFunc, HandleFor} from '../common/types.js';
@@ -31,10 +32,10 @@ export enum WebWorkerEvent {
 /**
  * @public
  */
-export type WebWorkerEvents = {
+export interface WebWorkerEvents extends Record<EventType, unknown> {
   [WebWorkerEvent.Console]: ConsoleMessage;
   [WebWorkerEvent.Error]: Error;
-};
+}
 
 /**
  * This class represents a

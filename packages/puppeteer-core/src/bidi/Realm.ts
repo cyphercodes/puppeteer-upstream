@@ -411,7 +411,10 @@ export class BidiWorkerRealm extends BidiRealm {
   override initialize(): void {
     super.initialize();
     this.realm.on('log', ({entry}) => {
-      if (isConsoleLogEntry(entry) && this.#worker.listenerCount(WebWorkerEvent.Console)) {
+      if (
+        isConsoleLogEntry(entry) &&
+        this.#worker.listenerCount(WebWorkerEvent.Console)
+      ) {
         const args = entry.args.map(arg => {
           return this.createHandle(arg);
         });

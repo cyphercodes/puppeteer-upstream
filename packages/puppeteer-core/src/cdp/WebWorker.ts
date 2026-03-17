@@ -9,13 +9,13 @@ import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
 import type {Realm} from '../api/Realm.js';
 import {TargetType} from '../api/Target.js';
 import {WebWorker, WebWorkerEvent} from '../api/WebWorker.js';
+import {ConsoleMessage} from '../common/ConsoleMessage.js';
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
 import {debugError} from '../common/util.js';
 
 import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import type {NetworkManager} from './NetworkManager.js';
-import {ConsoleMessage} from '../common/ConsoleMessage.js';
 import {convertConsoleMessageLevel, valueFromJSHandle} from './utils.js';
 
 /**
@@ -69,6 +69,8 @@ export class CdpWebWorker extends WebWorker {
             return this.#world.createCdpHandle(arg);
           });
           const textTokens = [];
+          // eslint-disable-next-line max-len -- The comment is long.
+          // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
           for (const arg of values) {
             textTokens.push(valueFromJSHandle(arg));
           }
