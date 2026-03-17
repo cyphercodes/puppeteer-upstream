@@ -895,16 +895,13 @@ export class CdpPage extends Page {
     world: IsolatedWorld,
     event: Protocol.Runtime.ConsoleAPICalledEvent,
   ): void {
+    if (!this.listenerCount(PageEvent.Console)) {
+      return;
+    }
     const values = event.args.map(arg => {
       return world.createCdpHandle(arg);
     });
 
-    if (!this.listenerCount(PageEvent.Console)) {
-      values.forEach(arg => {
-        return arg.dispose();
-      });
-      return;
-    }
     const textTokens = [];
     // eslint-disable-next-line max-len -- The comment is long.
     // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.

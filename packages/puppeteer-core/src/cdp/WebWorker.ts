@@ -64,41 +64,35 @@ export class CdpWebWorker extends WebWorker {
     });
     this.#world.emitter.on('consoleapicalled', async event => {
       try {
-        const values = event.args.map(arg => {
-          return this.#world.createCdpHandle(arg);
-        });
-
-        if (!this.listenerCount(WebWorkerEvent.Console)) {
-          values.forEach(arg => {
-            return arg.dispose();
+        if (this.listenerCount(WebWorkerEvent.Console)) {
+          const values = event.args.map(arg => {
+            return this.#world.createCdpHandle(arg);
           });
-          return;
-        }
-
-        const textTokens = [];
-        for (const arg of values) {
-          textTokens.push(valueFromJSHandle(arg));
-        }
-        const stackTraceLocations = [];
-        if (event.stackTrace) {
-          for (const callFrame of event.stackTrace.callFrames) {
-            stackTraceLocations.push({
-              url: callFrame.url,
-              lineNumber: callFrame.lineNumber,
-              columnNumber: callFrame.columnNumber,
-            });
+          const textTokens = [];
+          for (const arg of values) {
+            textTokens.push(valueFromJSHandle(arg));
           }
+          const stackTraceLocations = [];
+          if (event.stackTrace) {
+            for (const callFrame of event.stackTrace.callFrames) {
+              stackTraceLocations.push({
+                url: callFrame.url,
+                lineNumber: callFrame.lineNumber,
+                columnNumber: callFrame.columnNumber,
+              });
+            }
+          }
+          const message = new ConsoleMessage(
+            convertConsoleMessageLevel(event.type),
+            textTokens.join(' '),
+            values,
+            stackTraceLocations,
+            undefined,
+            event.stackTrace,
+            this.#id,
+          );
+          this.emit(WebWorkerEvent.Console, message);
         }
-        const message = new ConsoleMessage(
-          convertConsoleMessageLevel(event.type),
-          textTokens.join(' '),
-          values,
-          stackTraceLocations,
-          undefined,
-          event.stackTrace,
-          this.#id,
-        );
-        this.emit(WebWorkerEvent.Console, message);
 
         return consoleAPICalled(this.#world, event);
       } catch (err) {
