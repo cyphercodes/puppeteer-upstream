@@ -9,6 +9,7 @@ import type {Protocol} from 'devtools-protocol';
 import type {JSHandle} from '../api/JSHandle.js';
 import {PuppeteerURL, evaluationString} from '../common/util.js';
 import {assert} from '../util/assert.js';
+import {ConsoleMessageType} from '../common/ConsoleMessage.js';
 
 /**
  * @internal
@@ -268,4 +269,16 @@ export const CDP_BINDING_PREFIX = 'puppeteer_';
  */
 export function pageBindingInitString(type: string, name: string): string {
   return evaluationString(addPageBinding, type, name, CDP_BINDING_PREFIX);
+}
+
+/**
+ * @internal
+ */
+export function convertConsoleMessageLevel(method: string): ConsoleMessageType {
+  switch (method) {
+    case 'warning':
+      return 'warn';
+    default:
+      return method as ConsoleMessageType;
+  }
 }

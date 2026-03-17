@@ -32,10 +32,7 @@ import {
   type ScreenshotOptions,
   type WaitTimeoutOptions,
 } from '../api/Page.js';
-import {
-  ConsoleMessage,
-  type ConsoleMessageType,
-} from '../common/ConsoleMessage.js';
+import {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {
   Cookie,
   DeleteCookiesRequest,
@@ -86,20 +83,12 @@ import {TargetManagerEvent} from './TargetManageEvents.js';
 import type {TargetManager} from './TargetManager.js';
 import {Tracing} from './Tracing.js';
 import {
+  convertConsoleMessageLevel,
   createClientError,
   pageBindingInitString,
   valueFromJSHandle,
 } from './utils.js';
 import {CdpWebWorker} from './WebWorker.js';
-
-function convertConsoleMessageLevel(method: string): ConsoleMessageType {
-  switch (method) {
-    case 'warning':
-      return 'warn';
-    default:
-      return method as ConsoleMessageType;
-  }
-}
 
 /**
  * @internal
