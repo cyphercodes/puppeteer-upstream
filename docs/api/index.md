@@ -637,6 +637,13 @@ All the events that a page instance may emit.
 </td><td>
 
 </td></tr>
+<tr><td>
+
+<span id="webworkerevent">[WebWorkerEvent](./puppeteer.webworkerevent.md)</span>
+
+</td><td>
+
+</td></tr>
 </tbody></table>
 
 ## Functions
@@ -1872,6 +1879,13 @@ Browsers supported by Puppeteer.
 </td><td>
 
 Whether to wait for the element to be [visible](./puppeteer.elementhandle.isvisible.md) or [hidden](./puppeteer.elementhandle.ishidden.md). `null` to disable visibility checks.
+
+</td></tr>
+<tr><td>
+
+<span id="webworkerevents">[WebWorkerEvents](./puppeteer.webworkerevents.md)</span>
+
+</td><td>
 
 </td></tr>
 <tr><td>
