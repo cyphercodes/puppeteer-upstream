@@ -226,7 +226,11 @@ describe('Workers', function () {
           return console.log(new Error('test error'));
         }),
       ]);
-      expect(message.text()).toEqual('Error: test error');
+
+      expect(message.text()).atLeastOneToContain([
+        'Error: test error', // CDP expectation
+        'JSHandle@error', // BiDi current behavior
+      ]);
       expect(message.type()).toEqual('log');
       expect(message.args()).toHaveLength(1);
     });
@@ -240,7 +244,10 @@ describe('Workers', function () {
           return console.log(new Error('test error\nsecond line'));
         }),
       ]);
-      expect(message.text()).toEqual('Error: test error');
+      expect(message.text()).atLeastOneToContain([
+        'Error: test error', // CDP expectation
+        'JSHandle@error', // BiDi current behavior
+      ]);
       expect(message.type()).toEqual('log');
       expect(message.args()).toHaveLength(1);
     });

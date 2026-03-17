@@ -9,7 +9,65 @@ import type * as Bidi from 'webdriver-bidi-protocol';
 import {ProtocolError, TimeoutError} from '../common/Errors.js';
 import {PuppeteerURL} from '../common/util.js';
 
+import type {
+  ConsoleMessageLocation,
+  ConsoleMessageType,
+} from '../common/ConsoleMessage.js';
+
 import {BidiDeserializer} from './Deserializer.js';
+
+/**
+ * @internal
+ */
+export function convertConsoleMessageLevel(method: string): ConsoleMessageType {
+  switch (method) {
+    case 'group':
+      return 'startGroup';
+    case 'groupCollapsed':
+      return 'startGroupCollapsed';
+    case 'groupEnd':
+      return 'endGroup';
+    default:
+      return method as ConsoleMessageType;
+  }
+}
+
+/**
+ * @internal
+ */
+export function getStackTraceLocations(
+  stackTrace?: Bidi.Script.StackTrace,
+): ConsoleMessageLocation[] {
+  const stackTraceLocations: ConsoleMessageLocation[] = [];
+  if (stackTrace) {
+    for (const callFrame of stackTrace.callFrames) {
+      stackTraceLocations.push({
+        url: callFrame.url,
+        lineNumber: callFrame.lineNumber,
+        columnNumber: callFrame.columnNumber,
+      });
+    }
+  }
+  return stackTraceLocations;
+}
+
+/**
+ * @internal
+ */
+export function isConsoleLogEntry(
+  event: Bidi.Log.Entry,
+): event is Bidi.Log.ConsoleLogEntry {
+  return event.type === 'console';
+}
+
+/**
+ * @internal
+ */
+export function isJavaScriptLogEntry(
+  event: Bidi.Log.Entry,
+): event is Bidi.Log.JavascriptLogEntry {
+  return event.type === 'javascript';
+}
 
 /**
  * @internal

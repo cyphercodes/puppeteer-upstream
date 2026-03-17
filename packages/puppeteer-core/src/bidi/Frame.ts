@@ -30,11 +30,7 @@ import {
 } from '../api/Frame.js';
 import {PageEvent, type WaitTimeoutOptions} from '../api/Page.js';
 import {Accessibility} from '../cdp/Accessibility.js';
-import type {ConsoleMessageType} from '../common/ConsoleMessage.js';
-import {
-  ConsoleMessage,
-  type ConsoleMessageLocation,
-} from '../common/ConsoleMessage.js';
+import {ConsoleMessage} from '../common/ConsoleMessage.js';
 import {TargetCloseError, UnsupportedOperation} from '../common/Errors.js';
 import type {TimeoutSettings} from '../common/TimeoutSettings.js';
 import type {Awaitable, HandleFor} from '../common/types.js';
@@ -60,23 +56,14 @@ import {BidiJSHandle} from './JSHandle.js';
 import type {BidiPage} from './Page.js';
 import type {BidiRealm} from './Realm.js';
 import {BidiFrameRealm} from './Realm.js';
-import {rewriteNavigationError} from './util.js';
+import {
+  convertConsoleMessageLevel,
+  getStackTraceLocations,
+  isConsoleLogEntry,
+  isJavaScriptLogEntry,
+  rewriteNavigationError,
+} from './util.js';
 import {BidiWebWorker} from './WebWorker.js';
-
-// TODO: Remove this and map CDP the correct method.
-// Requires breaking change.
-function convertConsoleMessageLevel(method: string): ConsoleMessageType {
-  switch (method) {
-    case 'group':
-      return 'startGroup';
-    case 'groupCollapsed':
-      return 'startGroupCollapsed';
-    case 'groupEnd':
-      return 'endGroup';
-    default:
-      return method as ConsoleMessageType;
-  }
-}
 
 export class BidiFrame extends Frame {
   static from(
@@ -178,6 +165,9 @@ export class BidiFrame extends Frame {
         return;
       }
       if (isConsoleLogEntry(entry)) {
+        if (!this.page().listenerCount(PageEvent.Console)) {
+          return;
+        }
         const args = entry.args.map(arg => {
           return this.mainRealm().createHandle(arg);
         });
@@ -638,32 +628,4 @@ export class BidiFrame extends Frame {
       [element.remoteValue() as Bidi.Script.SharedReference],
     );
   }
-}
-
-function isConsoleLogEntry(
-  event: Bidi.Log.Entry,
-): event is Bidi.Log.ConsoleLogEntry {
-  return event.type === 'console';
-}
-
-function isJavaScriptLogEntry(
-  event: Bidi.Log.Entry,
-): event is Bidi.Log.JavascriptLogEntry {
-  return event.type === 'javascript';
-}
-
-function getStackTraceLocations(
-  stackTrace?: Bidi.Script.StackTrace,
-): ConsoleMessageLocation[] {
-  const stackTraceLocations: ConsoleMessageLocation[] = [];
-  if (stackTrace) {
-    for (const callFrame of stackTrace.callFrames) {
-      stackTraceLocations.push({
-        url: callFrame.url,
-        lineNumber: callFrame.lineNumber,
-        columnNumber: callFrame.columnNumber,
-      });
-    }
-  }
-  return stackTraceLocations;
 }
