@@ -1381,6 +1381,13 @@ The TouchHandle interface exposes methods to manipulate touches that have been s
 </td></tr>
 <tr><td>
 
+<span id="webworkerevents">[WebWorkerEvents](./puppeteer.webworkerevents.md)</span>
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
 <span id="windowbounds">[WindowBounds](./puppeteer.windowbounds.md)</span>
 
 </td><td>
@@ -1879,13 +1886,6 @@ Browsers supported by Puppeteer.
 </td><td>
 
 Whether to wait for the element to be [visible](./puppeteer.elementhandle.isvisible.md) or [hidden](./puppeteer.elementhandle.ishidden.md). `null` to disable visibility checks.
-
-</td></tr>
-<tr><td>
-
-<span id="webworkerevents">[WebWorkerEvents](./puppeteer.webworkerevents.md)</span>
-
-</td><td>
 
 </td></tr>
 <tr><td>
