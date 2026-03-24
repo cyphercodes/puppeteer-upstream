@@ -180,7 +180,6 @@ describe('console', function () {
     const log = await logPromise;
 
     expect(log.text()).atLeastOneToContain([
-      '1 2 3 [object Object]',
       '1 2 3 [object Window]',
       '1 2 3 JSHandle@object', // WebDriver BiDi
     ]);
