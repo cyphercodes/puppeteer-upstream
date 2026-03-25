@@ -249,48 +249,77 @@ describe('Workers', function () {
       expect(message.type()).toEqual('log');
       expect(message.args()).toHaveLength(1);
     });
-    it('should work for different console API calls with logging functions', async () => {
+    it('should work for console.trace', async () => {
       const {page} = await getTestState();
       const worker = await createWorker(page);
 
-      const messages: ConsoleMessage[] = [];
-      worker.on(WebWorkerEvent.Console, msg => {
-        return messages.push(msg);
-      });
-      // All console events will be reported before `worker.evaluate` is finished.
-      await worker.evaluate(() => {
-        console.trace('calling console.trace');
-        console.dir('calling console.dir');
-        console.warn('calling console.warn');
-        console.error('calling console.error');
-        console.log(Promise.resolve('should not wait until resolved!'));
-      });
-      expect(
-        messages.map(msg => {
-          return msg.type();
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(worker, WebWorkerEvent.Console),
+        worker.evaluate(() => {
+          console.trace('calling console.trace');
         }),
-      ).toEqual(['trace', 'dir', 'warn', 'error', 'log']);
-      const texts = messages.map(msg => {
-        return msg.text();
-      });
-      try {
-        expect(texts).toEqual([
-          'calling console.trace',
-          'calling console.dir',
-          'calling console.warn',
-          'calling console.error',
-          '[promise Promise]',
-        ]);
-      } catch {
-        // WebDriver BiDi expectation.
-        expect(texts).toEqual([
-          'calling console.trace',
-          'calling console.dir',
-          'calling console.warn',
-          'calling console.error',
-          'JSHandle@promise',
-        ]);
-      }
+      ]);
+      expect(message.type()).toBe('trace');
+      expect(message.text()).toBe('calling console.trace');
+    });
+
+    it('should work for console.dir', async () => {
+      const {page} = await getTestState();
+      const worker = await createWorker(page);
+
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(worker, WebWorkerEvent.Console),
+        worker.evaluate(() => {
+          console.dir('calling console.dir');
+        }),
+      ]);
+      expect(message.type()).toBe('dir');
+      expect(message.text()).toBe('calling console.dir');
+    });
+
+    it('should work for console.warn', async () => {
+      const {page} = await getTestState();
+      const worker = await createWorker(page);
+
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(worker, WebWorkerEvent.Console),
+        worker.evaluate(() => {
+          console.warn('calling console.warn');
+        }),
+      ]);
+      expect(message.type()).toBe('warn');
+      expect(message.text()).toBe('calling console.warn');
+    });
+
+    it('should work for console.error', async () => {
+      const {page} = await getTestState();
+      const worker = await createWorker(page);
+
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(worker, WebWorkerEvent.Console),
+        worker.evaluate(() => {
+          console.error('calling console.error');
+        }),
+      ]);
+      expect(message.type()).toBe('error');
+      expect(message.text()).toBe('calling console.error');
+    });
+
+    it('should work for console.log with promise', async () => {
+      const {page} = await getTestState();
+      const worker = await createWorker(page);
+
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(worker, WebWorkerEvent.Console),
+        worker.evaluate(() => {
+          console.log(Promise.resolve('should not wait until resolved!'));
+        }),
+      ]);
+      expect(message.type()).toBe('log');
+      expect(message.text()).atLeastOneToContain([
+        '[promise Promise]',
+        'JSHandle@promise', // WebDriver BiDi expectation.
+      ]);
     });
     it('should work for different console API calls with timing functions', async () => {
       const {page} = await getTestState();
@@ -350,6 +379,7 @@ describe('Workers', function () {
       const log = await logPromise;
 
       expect(log.text()).atLeastOneToContain([
+        '1 2 3 [object Object]',
         '1 2 3 [object DedicatedWorkerGlobalScope]',
         '1 2 3 JSHandle@object', // WebDriver BiDi
       ]);
@@ -374,6 +404,23 @@ describe('Workers', function () {
       expect(message.type()).toBe('trace');
       expect(message.location().url).toBeDefined();
       expect(message.stackTrace().length).toBeGreaterThan(0);
+    });
+
+    it('should not dispose handles when worker has listeners', async () => {
+      const {page} = await getTestState();
+      const worker = await createWorker(page);
+
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(worker, WebWorkerEvent.Console),
+        worker.evaluate(() => {
+          return console.log({foo: 'bar'});
+        }),
+      ]);
+      const handle = message.args()[0]!;
+      expect(handle.disposed).toBe(false);
+      expect(await handle.jsonValue()).toEqual({foo: 'bar'});
+      await handle.dispose();
+      expect(handle.disposed).toBe(true);
     });
   });
 });

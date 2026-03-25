@@ -44,7 +44,7 @@ export abstract class Realm extends EventEmitter<{
   /** Emitted when a shared worker is created in the realm. */
   sharedworker: SharedWorkerRealm;
   /** Emitted whenever a log entry is added to the realm. */
-  log: {entry: Bidi.Log.Entry};
+  log: Bidi.Log.Entry;
 }> {
   #reason?: string;
   protected readonly disposables = new DisposableStack();
@@ -214,7 +214,7 @@ export class WindowRealm extends Realm {
       if (entry.source.realm !== this.id) {
         return;
       }
-      this.emit('log', {entry});
+      this.emit('log', entry);
     });
   }
 
@@ -292,7 +292,7 @@ export class DedicatedWorkerRealm extends Realm {
       if (entry.source.realm !== this.id) {
         return;
       }
-      this.emit('log', {entry});
+      this.emit('log', entry);
     });
   }
 
@@ -351,7 +351,7 @@ export class SharedWorkerRealm extends Realm {
       if (entry.source.realm !== this.id) {
         return;
       }
-      this.emit('log', {entry});
+      this.emit('log', entry);
     });
   }
 

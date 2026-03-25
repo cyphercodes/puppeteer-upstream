@@ -16,6 +16,7 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame, WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {JSHandle} from '../api/JSHandle.js';
+import {WebWorker, WebWorkerEvent} from '../api/WebWorker.js';
 import type {
   Credentials,
   HeapSnapshotOptions,
@@ -894,13 +895,27 @@ export class CdpPage extends Page {
   #onConsoleAPI(
     world: IsolatedWorld,
     event: Protocol.Runtime.ConsoleAPICalledEvent,
+    values?: JSHandle[],
   ): void {
-    if (!this.listenerCount(PageEvent.Console)) {
+    if (!values) {
+      values = event.args.map(arg => {
+        return world.createCdpHandle(arg);
+      });
+    }
+
+    const hasPageConsoleListeners = this.listenerCount(PageEvent.Console) > 0;
+    const hasWorkerConsoleListeners =
+      world.environment instanceof WebWorker &&
+      world.environment.listenerCount(WebWorkerEvent.Console) > 0;
+
+    if (!hasPageConsoleListeners) {
+      if (!hasWorkerConsoleListeners) {
+        values.forEach(arg => {
+          return arg.dispose();
+        });
+      }
       return;
     }
-    const values = event.args.map(arg => {
-      return world.createCdpHandle(arg);
-    });
 
     const textTokens = [];
     // eslint-disable-next-line max-len -- The comment is long.

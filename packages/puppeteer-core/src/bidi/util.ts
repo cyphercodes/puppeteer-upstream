@@ -15,6 +15,8 @@ import {PuppeteerURL} from '../common/util.js';
 
 import {BidiDeserializer} from './Deserializer.js';
 
+// TODO: Remove this and map CDP the correct method.
+// Requires breaking change.
 /**
  * @internal
  */

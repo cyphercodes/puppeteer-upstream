@@ -6,6 +6,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {CDPSessionEvent, type CDPSession} from '../api/CDPSession.js';
+import type {JSHandle} from '../api/JSHandle.js';
 import type {Realm} from '../api/Realm.js';
 import {TargetType} from '../api/Target.js';
 import {WebWorker, WebWorkerEvent} from '../api/WebWorker.js';
@@ -24,6 +25,7 @@ import {convertConsoleMessageLevel, valueFromJSHandle} from './utils.js';
 export type ConsoleAPICalledCallback = (
   world: IsolatedWorld,
   event: Protocol.Runtime.ConsoleAPICalledEvent,
+  values?: JSHandle[]
 ) => void;
 
 /**
@@ -64,10 +66,11 @@ export class CdpWebWorker extends WebWorker {
     });
     this.#world.emitter.on('consoleapicalled', async event => {
       try {
+        const values = event.args.map(arg => {
+          return this.#world.createCdpHandle(arg);
+        });
+
         if (this.listenerCount(WebWorkerEvent.Console)) {
-          const values = event.args.map(arg => {
-            return this.#world.createCdpHandle(arg);
-          });
           const textTokens = [];
           // eslint-disable-next-line max-len -- The comment is long.
           // eslint-disable-next-line @puppeteer/use-using -- These are not owned by this function.
@@ -96,7 +99,7 @@ export class CdpWebWorker extends WebWorker {
           this.emit(WebWorkerEvent.Console, message);
         }
 
-        return consoleAPICalled(this.#world, event);
+        return consoleAPICalled(this.#world, event, values);
       } catch (err) {
         debugError(err);
       }
