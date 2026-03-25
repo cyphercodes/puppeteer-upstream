@@ -16,7 +16,6 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame, WaitForOptions} from '../api/Frame.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {JSHandle} from '../api/JSHandle.js';
-import {WebWorker, WebWorkerEvent} from '../api/WebWorker.js';
 import type {
   Credentials,
   HeapSnapshotOptions,
@@ -33,6 +32,7 @@ import {
   type ScreenshotOptions,
   type WaitTimeoutOptions,
 } from '../api/Page.js';
+import {WebWorker, WebWorkerEvent} from '../api/WebWorker.js';
 import {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {
   Cookie,

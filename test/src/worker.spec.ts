@@ -416,7 +416,7 @@ describe('Workers', function () {
           return console.log({foo: 'bar'});
         }),
       ]);
-      const handle = message.args()[0]!;
+      using handle = message.args()[0]!;
       expect(handle.disposed).toBe(false);
       expect(await handle.jsonValue()).toEqual({foo: 'bar'});
       await handle.dispose();

@@ -25,7 +25,7 @@ import {convertConsoleMessageLevel, valueFromJSHandle} from './utils.js';
 export type ConsoleAPICalledCallback = (
   world: IsolatedWorld,
   event: Protocol.Runtime.ConsoleAPICalledEvent,
-  values?: JSHandle[]
+  values?: JSHandle[],
 ) => void;
 
 /**
