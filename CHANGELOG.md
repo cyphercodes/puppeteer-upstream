@@ -2,6 +2,31 @@
 
 Combined changelog for puppeteer and puppeteer-core.
 
+## [24.41.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.40.0...puppeteer-v24.41.0) (2026-03-26)
+
+
+### ♻️ Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 24.40.0 to 24.41.0
+
+
+### 🎉 Features
+
+* roll to Firefox 149.0 ([#14799](https://github.com/puppeteer/puppeteer/issues/14799)) ([9fd5ceb](https://github.com/puppeteer/puppeteer/commit/9fd5ceb054b0508bd8f4b14ed950a011a31f101a))
+
+
+### 🛠️ Fixes
+
+* without azimuthAngle the altitudeAngle should no be specified ([#14781](https://github.com/puppeteer/puppeteer/issues/14781)) ([6f9d975](https://github.com/puppeteer/puppeteer/commit/6f9d9752207d55be0e3b0d10ba9a416a81af4694))
+
+
 ## [24.40.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v24.39.1...puppeteer-v24.40.0) (2026-03-19)
 
 
